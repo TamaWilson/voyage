@@ -15,6 +15,5 @@ Estudo para construção de um sistema de sugestão de rotas.
 
 #TO-DO:
 
-- Adicionar função para incluir e conectar novos nós.
 - Ajustar o sistema para calcular as rotas em qualquer direção.
 - Incluir a inicialização no código python.
