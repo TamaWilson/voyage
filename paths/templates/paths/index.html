@@ -1,0 +1,27 @@
+<html>
+<head>
+	<title>VOYAGE</title>
+</head>
+<body>
+<b>Bem vindo ao Voyage.</b>
+<br/>
+<form action={% url 'voyage:results'  %} method="POST">
+	{% csrf_token %}
+	<label>ORIGEM:</label>
+		<select id="origem" name="origem">
+			<option disabled selected> -- escolha -- </option>	
+			{% for item in localidades %}
+				<option name={{item}}>{{item}}</option>	
+			{% endfor %}
+		</select>
+	<label>DESTINO:</label>
+	<select id="destino" name="destino">
+			<option disabled selected> -- escolha -- </option>	
+			{% for item in localidades %}
+				<option name={{item}}>{{item}}</option>	
+			{% endfor %}
+	</select>
+    <input type="submit" value="OK"/>
+</form>
+</body>
+</html>
