@@ -9,9 +9,30 @@
 
 	<!-- Latest compiled and minified JavaScript -->
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script></head>
+	<style type="text/css">
+		.navbar-default .navbar-nav>li>a:hover {
+    color: #333;
+    background-color: rgba(209, 209, 209, 0.52);
+
+}
+
+
+	</style>
 <body>
 	<div class="container">
-<h1>Bem vindo ao Voyage.</h1>
+<h1>Bem vindo ao VOYAGE</h1>
+<hr/>
+<nav class="navbar navbar-default">
+  <div class="container-fluid">
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+    	<ul class="nav navbar-nav">
+    		<li><a href={% url 'voyage:index' %}>Rotas</a></li>
+    		<li><a href={% url 'voyage:insert' %}>Cadastrar</a></li>
+    		<li><a href={% url 'voyage:conectar' %}>Relacionar</a></li>
+    	</ul>
+  </div>
+  </div>
+</nav>  	
 <br/>
 <form action={% url 'voyage:results'  %} method="POST">
 	{% csrf_token %}

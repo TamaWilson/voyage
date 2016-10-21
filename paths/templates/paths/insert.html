@@ -9,23 +9,9 @@
 
 	<!-- Latest compiled and minified JavaScript -->
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script></head>
-
-	<style type="text/css">
-
-		.rowheader { 
-			background: #03A9F4;
-    		color: white;
-    		font-weight: bolder;
-    	}
-    	.row { 
-     		border: 1px black solid ;	
-
-    	}
-	</style>
 <body>
-	<div class="Container">
-		<h1>Voyage</h1>
-<br/<h1>VOYAGE - Resultado/h1>
+	<div class="container">
+<h1>VOYAGE - Cadastrar Localidade</h1>
 <hr/>
 <nav class="navbar navbar-default">
   <div class="container-fluid">
@@ -39,28 +25,19 @@
   </div>
 </nav>  	
 <br/>
-{%if erro %}
-	<span style="color: red;font-weight: bolder;">Ocorreu um erro<span>
-{% else %}
-	{% if null_result %}
-	<span style="color: red;font-weight: bolder;">Nenhum caminho encontrado<span>	
-	{% else %}
-	  <div class="row rowheader">
-	  		<div class="col-md-8">MENOR CAMINHO</div>
-	  		<div class="col-md-4">CUSTO EM MINUTOS</div>
-	  </div>
-	 <div class="row ">
-	 	<div class="col-md-8">
-		{% for item in caminho %}
-			{{item}} {%if item != caminho|last %} --> {% endif %}	
-		{% endfor %}
-	    </div>
-	    <div class="col-md-4">
-			{{custo}}
-		</div>
-	</div>
+<br/>
+<div class='container'>
+	<form class="navbar-form pull-left" method="POST">
+  {% csrf_token %}
+  <label>Insira o nome do bairro</label>
+  <input type="text" class="span2" name="nome">
+  <button type="submit" class="btn">Submit</button>
+</form>
+	<div>
+	{% if insert %}
+	<span style="color: green;font-weight: bolder;">{{status}}<span>
 	{% endif %}
-{% endif %}
-<div>
+	<div>
+</div>
 </body>
 </html>
