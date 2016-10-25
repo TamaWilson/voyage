@@ -8,14 +8,14 @@ from neomodel import (StructuredNode, StructuredRel, StringProperty, IntegerProp
 
 class ConectaRel(StructuredRel):
     #Define os tipos de relacionamentos que serão criados no banco de dados por essa classe e suas propriedades.
-    #cada atributo da classe está relacionado com um tipo de propriedade, os relacionamento definido por essa classe usam Float, além disso definimos que as propiedades são obrigatórias     
+    #cada atributo da classe está relacionado com um tipo de propriedade, os relacionamento definido por essa classe usam Float e Interger, além disso definimos que as propiedades são obrigatórias    
     distancia = FloatProperty(required=True)
-    vnormal = FloatProperty(required=True)
-    vrush = FloatProperty(required=True)
+    v_normal = IntegerProperty(required=True)
+    v_pico = IntegerProperty(required=True)
 
 class Localidade(StructuredNode):
     #Da mesma forma os relacionamentos são definidos no model, também definimos os nós e suas propriedades (além dos seus tipos) 
     nome = StringProperty(unique_index=True, required=True)
     
     conectar = Relationship('Localidade', 'CONECTA_COM', model=ConectaRel) #Um atributo para representar um relacionamento possível para esse tipo de nó é criado baseado no modelo do ConectaRel
-
+ 
