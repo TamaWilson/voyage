@@ -64,7 +64,7 @@ def insert(request): #funcao para inserir um no no banco de dados
     if request.POST.get("nome"): #caso algum valor tenha retornado da interface
         
         nome_node = request.POST['nome']   #recupera o texto inserido na pagina
-        query = "CREATE (estiva:Localidade {nome:'%s'})" % (nome_node) #executa a query para criar um novo node
+        query = "CREATE (:Localidade {nome:'%s'})" % (nome_node) #executa a query para criar um novo node
         db.cypher_query(query)
         context = { 'insert': True, 'status':"Localidade cadastrada com sucesso"}
     return render(request, 'paths/insert.html', context)

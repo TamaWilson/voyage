@@ -16,6 +16,5 @@ class Localidade(StructuredNode):
      #Da mesma forma os relacionamentos são definidos no model, também definimos os nós e suas propriedades (além dos seus tipos) 
     nome = StringProperty(unique_index=True, required=True)
     
-    # traverse incoming IS_FROM relation, inflate to Person objects
     conectar = Relationship('Localidade', 'CONECTA_COM', model=ConectaRel) #Um atributo para representar um relacionamento possível para esse tipo de nó é criado baseado no modelo do ConectaRel
 
