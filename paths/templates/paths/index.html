@@ -37,6 +37,7 @@
 <form action={% url 'voyage:results'  %} method="POST">
 	{% csrf_token %}
 	  <div class="form-group">
+	  	<div class="row">
 	<label>ORIGEM:</label>
 		<select id="origem" name="origem">
 			<option selected name="NOK"> -- escolha -- </option>	
@@ -51,7 +52,13 @@
 				<option name={{item}}>{{item}}</option>	
 			{% endfor %}
 	</select>
+	</div>
+	<div class="row">
+	<input type="checkbox" name="rush" value="true">Hora do rush<br>
+    </div>
+    <div class="row">
     <button type="submit" class="btn btn-default">OK</button>
+    </div>
 </form>
 </DIV>
 </div>

@@ -17,9 +17,10 @@ def index(request):
     return render(request, 'paths/index.html', context)
 
 def results(request):
+    #atribui os valores inseridos na página em suas variaveis
     origem = request.POST['origem']
     destino = request.POST['destino']
-    vSet = True
+    vSet = request.POST['rush']
 
     #Verifica no lado do servidor se a origem/destino são iguais ou escolhidos corretamente
     if(origem == destino) or (origem == "NOK") or (destino == "NOK"):
@@ -28,14 +29,13 @@ def results(request):
         hora_local = datetime.datetime.now().time() #carrega o horário local para uma variável
         velocidade= "vnormal" #inicia a execução com a velocidade definida como normal
 
-        #Verifica se a variavel hora_local está no intervalo dos horários de pico    
-        #if (datetime.time(18,0,0,0) < hora_local and datetime.time(19,0,0,0) > hora_local) or (datetime.time(11,30,0,0) < hora_local and datetime.time(14,0,0,0) > hora_local): 
-        if vSet == "True":
+        #verifica se o horário de pico foi ativado 
+        if vSet == "true":
             velocidade= "vrush" #Se a condição for positiva a velocidade é definida para o horário de pico
     
         query = '''MATCH (start:Localidade {nome: '%s'}), (end:Localidade {nome: '%s'})
                    CALL apoc.algo.dijkstra(start, end, 'CONECTA_COM', '%s') YIELD path, weight
-                   RETURN path, weight''' % (origem, destino,velocidade) #carrega a query com algoritmo de Dijkstra. Nesse momento o calculo de distância é realizado na proria query
+                   RETURN path, weight''' % (origem, destino,velocidade) #carrega a query com algoritmo de Dijkstra utilizando o plugin APOC do neo4j. 
         
         
         results, meta = db.cypher_query(query) #executa a query retorna um record list contendo apenas 1 resultado (o menor)
@@ -61,10 +61,10 @@ def insert(request): #funcao para inserir um no no banco de dados
     
     context = { 'insert': False, 'status':"Ocorreu um erro" }
 
-    if request.POST.get("nome"):
+    if request.POST.get("nome"): #caso algum valor tenha retornado da interface
         
         nome_node = request.POST['nome']   #recupera o texto inserido na pagina
-        query = "CREATE (estiva:Localidade {nome:'%s'})" % (nome_node)
+        query = "CREATE (estiva:Localidade {nome:'%s'})" % (nome_node) #executa a query para criar um novo node
         db.cypher_query(query)
         context = { 'insert': True, 'status':"Localidade cadastrada com sucesso"}
     return render(request, 'paths/insert.html', context)
@@ -80,20 +80,21 @@ def conectar(request): #funcao para ligar um nó ao outro
     localidades.sort()
     context = { "localidades" : localidades, 'insert':False, 'status': "<span style='color: red;font-weight: bolder;'>ERRO<span>"  }
     
-    if request.POST.get("distancia"):
+    if request.POST.get("distancia"): #verifica se algum valor foi inserido na interface
         origem = request.POST['origem']
         destino = request.POST['destino']
         vn = int(request.POST['v_normal'])
         vp = int(request.POST['v_pico'])
         distancia_n = float(request.POST['distancia'])
 
+        #O calculo do peso é realizado nesse momento para inclusão no relacionamento
         pesoN = round((60*distancia_n)/vn,2)
         pesoR  = round((60*distancia_n)/vp,2)
 
-        if(origem == destino) or (origem == "NOK") or (destino == "NOK"):
+        if(origem == destino) or (origem == "NOK") or (destino == "NOK"): #checa se origem e destino são válidos ou não são iguais
              context = { "localidades" : localidades, 'insert': True, 'status': "<span style='color: red;font-weight: bolder;'>ERRO<span>" }
         else:
-
+            #A query abaixo cria um novo relacionamento entre 2 nós informados pelo usuário
             query = "MATCH (origem:Localidade {nome:'%s'}), (destino:Localidade {nome:'%s'}) CREATE (origem)-[:CONECTA_COM {distancia: '%s', vnormal: '%s', vrush:'%s' }]->(destino)" % (origem,destino,distancia_n,pesoN,pesoR)
             db.cypher_query(query)
 
