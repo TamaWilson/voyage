@@ -8,8 +8,8 @@ from neomodel import (StructuredNode, StructuredRel, StringProperty, IntegerProp
 
 class ConectaRel(StructuredRel):
     distancia = FloatProperty(required=True)
-    v_normal = IntegerProperty(required=True)
-    v_pico = IntegerProperty(required=True)
+    vnormal = FloatProperty(required=True)
+    vrush = FloatProperty(required=True)
 
 class Localidade(StructuredNode):
     nome = StringProperty(unique_index=True, required=True)
