@@ -20,7 +20,6 @@ def results(request):
     #atribui os valores inseridos na página em suas variaveis
     origem = request.POST['origem']
     destino = request.POST['destino']
-    vSet = request.POST['rush']
 
     #Verifica no lado do servidor se a origem/destino são iguais ou escolhidos corretamente
     if(origem == destino) or (origem == "NOK") or (destino == "NOK"):
@@ -30,7 +29,7 @@ def results(request):
         velocidade= "vnormal" #inicia a execução com a velocidade definida como normal
 
         #verifica se o horário de pico foi ativado 
-        if vSet == "true":
+        if request.POST.get("rush"):
             velocidade= "vrush" #Se a condição for positiva a velocidade é definida para o horário de pico
     
         query = '''MATCH (start:Localidade {nome: '%s'}), (end:Localidade {nome: '%s'})
