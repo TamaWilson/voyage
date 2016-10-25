@@ -1,3 +1,4 @@
+﻿CREATE (estiva:Localidade {nome:'Estiva'}),
 (terminal_industrial:Localidade {nome:'Terminal do Dist. Industrial'}),
 (vila_itamar:Localidade {nome:'Vila Itamar'}),
 (tirirical:Localidade {nome:'Tirirical'}),
