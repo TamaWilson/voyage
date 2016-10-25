@@ -25,13 +25,12 @@ def results(request):
     if(origem == destino) or (origem == "NOK") or (destino == "NOK"):
         context = { 'erro': True }
     else:
-        hora_local = datetime.datetime.now().time() #carrega o horário local para uma variável
-        velocidade= "vnormal" #inicia a execução com a velocidade definida como normal
-
         #verifica se o horário de pico foi ativado 
         if request.POST.get("rush"):
             velocidade= "vrush" #Se a condição for positiva a velocidade é definida para o horário de pico
-    
+        else:
+            velocidade= "vnormal" #Caso não seja definido o rush, o peso da veolicidade será normal
+
         query = '''MATCH (start:Localidade {nome: '%s'}), (end:Localidade {nome: '%s'})
                    CALL apoc.algo.dijkstra(start, end, 'CONECTA_COM', '%s') YIELD path, weight
                    RETURN path, weight''' % (origem, destino,velocidade) #carrega a query com algoritmo de Dijkstra utilizando o plugin APOC do neo4j. 

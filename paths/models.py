@@ -3,7 +3,6 @@ os.environ['NEO4J_REST_URL'] = 'http://neo4j:neo4@localhost:7474/db/data/'
 
 from django.db import models
 
-
 from neomodel import (StructuredNode, StructuredRel, StringProperty, IntegerProperty,Relationship,FloatProperty)
 
 class ConectaRel(StructuredRel):
