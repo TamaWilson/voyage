@@ -1,9 +1,9 @@
 from django.shortcuts import render
-from django.http import HttpResponse
-from django.shortcuts import render
 from neomodel import db
 from paths.models import Localidade, ConectaRel
-import datetime
+import pygraphviz as gv
+from django.conf import settings as djangoSettings
+
 # Create your views here.
 
 def index(request):
@@ -20,9 +20,8 @@ def results(request):
     #atribui os valores inseridos na página em suas variaveis
     origem = request.POST['origem']
     destino = request.POST['destino']
-
-    #Verifica no lado do servidor se a origem/destino são iguais ou escolhidos corretamente
-    if(origem == destino) or (origem == "NOK") or (destino == "NOK"):
+     #Verifica no lado do servidor se a origem/destino são iguais ou escolhidos corretamente
+    if(origem == destino):
         context = { 'erro': True }
     else:
         #verifica se o horário de pico foi ativado 
@@ -43,14 +42,10 @@ def results(request):
         else:
             result = results[0] #Recupera o unico indice do RecordList como um objeto do tipo Record
             raw_nodes = result['path'] #Atraves do index 'path' retornamos o PathGraph com todos os nós
+            
+            drawGraph(raw_nodes)    
 
-            pre_nodes = [Localidade.inflate(row) for row in raw_nodes.nodes] #Inicializamos os nós para acessar suas propriedades
-    
-            nodes = []
-            for node in pre_nodes: #percorremos a lista de nós para obter o nome deles em uma outra lista
-                nodes.append(node.nome)
-    
-            context = { 'caminho' : nodes, 'custo': round(result['weight'],2) , "erro": False, "null_result": False } #definimos o contexto com o nome dos nos, o custo total e as flags de controle da view
+            context = { 'custo': round(result['weight'],2) , "erro": False, "null_result": False } #definimos o contexto com o nome dos nos, o custo total e as flags de controle da view
 
     return render(request, 'paths/results.html', context)
 
@@ -83,22 +78,39 @@ def conectar(request): #funcao para ligar um nó ao outro
         destino = request.POST['destino']
         vn = int(request.POST['v_normal'])
         vp = int(request.POST['v_pico'])
+        danger = int(request.POST['danger'])
         distancia_n = float(request.POST['distancia'])
+        
 
         #O calculo do peso é realizado nesse momento para inclusão no relacionamento
         pesoN = round((60*distancia_n)/vn,2)
         pesoR  = round((60*distancia_n)/vp,2)
 
-        if(origem == destino) or (origem == "NOK") or (destino == "NOK"): #checa se origem e destino são válidos ou não são iguais
+        if(origem == destino): #checa se origem e destino são válidos ou não são iguais
              context = { "localidades" : localidades, 'insert': True, 'status': "<span style='color: red;font-weight: bolder;'>ERRO<span>" }
         else:
             #A query abaixo cria um novo relacionamento entre 2 nós informados pelo usuário
-            query = "MATCH (origem:Localidade {nome:'%s'}), (destino:Localidade {nome:'%s'}) CREATE (origem)-[:CONECTA_COM {distancia: '%s', vnormal: '%s', vrush:'%s' }]->(destino)" % (origem,destino,distancia_n,pesoN,pesoR)
+            query = "MATCH (origem:Localidade {nome:'%s'}), (destino:Localidade {nome:'%s'}) CREATE (origem)-[:CONECTA_COM {distancia: %02f, vnormal: %02f, vrush: %02f, danger: %d}]->(destino)" % (origem,destino,distancia_n,pesoN,pesoR, danger)
             db.cypher_query(query)
 
             context = { "localidades" : localidades, 'insert': True, 'status': "<span style='color: green;font-weight: bolder;'>CONECTADO COM SUCESSO<span>" }
+            
+
+    return render(request, 'paths/conectar.html', context)
 
 
-    return render(request, 'paths/conectar.html', context)   
-
+def drawGraph(raw_nodes):
     
+    nodes = [Localidade.inflate(row).nome for row in raw_nodes.nodes]
+    relationships = [rel['danger'] for rel in raw_nodes.relationships]
+    
+    graph = gv.AGraph(directed=True)
+    graph.add_nodes_from(nodes)
+
+    for i in range(len(nodes)-1):
+        hue = 0.32*(100-relationships[i])/100
+        hsv = "%f 1.0 1.0" % hue
+        graph.add_edge(nodes[i],nodes[i+1],color=hsv)
+    graph.layout(prog="dot")
+    graph.draw(djangoSettings.STATICFILES_DIRS[0] + "/paths/img/result_graph.png")
+
