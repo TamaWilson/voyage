@@ -1,3 +1,4 @@
+{% load static %}
 <html>
 <head>
 	<title>VOYAGE</title>
@@ -18,21 +19,28 @@
     		font-weight: bolder;
     	}
     	.row { 
-     		border: 1px black solid ;	
-
+     		border: 1px black solid ;
     	}
+		
+		#grad1 {
+ 		   	height: 20px;
+    		background: -webkit-linear-gradient(90deg, green 0%,yellow 45%, yellow 60%, red 100%); /* For Safari 5.1 to 6.0 */
+   			background: -o-linear-gradient(90deg, green 0%,yellow 45%, yellow 60%, red 100%); /* For Opera 11.1 to 12.0 */
+    		background: -moz-linear-gradient(90deg, green 0%,yellow 45%, yellow 60%, red 100%); /* For Firefox 3.6 to 15 */
+    		background: linear-gradient(90deg, green 0%,yellow 45%, yellow 60%, red 100%); /* Standard syntax (must be last) */
+		}
 	</style>
 <body>
 	<div class="Container">
-	<h1>VOYAGE - Resultado</h1>
+	<h1>VOYAGE - Results</h1>
 <hr/>
 <nav class="navbar navbar-default">
   <div class="container-fluid">
     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
     	<ul class="nav navbar-nav">
-    		<li><a href={% url 'voyage:index' %}>Rotas</a></li>
-    		<li><a href={% url 'voyage:insert' %}>Cadastrar</a></li>
-    		<li><a href={% url 'voyage:conectar' %}>Relacionar</a></li>
+    		<li><a href={% url 'voyage:index' %}>Routes</a></li>
+    		<li><a href={% url 'voyage:insert' %}>New Node</a></li>
+    		<li><a href={% url 'voyage:conectar' %}>New Relationship</a></li>
     	</ul>
   </div>
   </div>
@@ -44,22 +52,32 @@
 	{% if null_result %}
 	<span style="color: red;font-weight: bolder;">Nenhum caminho encontrado<span>	
 	{% else %}
-	  <div class="row rowheader">
-	  		<div class="col-md-8">MENOR CAMINHO</div>
-	  		<div class="col-md-4">CUSTO EM MINUTOS</div>
-	  </div>
-	 <div class="row ">
-	 	<div class="col-md-8">
-		{% for item in caminho %}
-			{{item}} {%if item != caminho|last %} --> {% endif %}	
-		{% endfor %}
+	<div class="col-md-5">		
+			<img src="{% static '/paths/img/result_graph.png' %}" alt="Mai image"/>
 	    </div>
-	    <div class="col-md-4">
+	<div class="col-md-2">	
+	 <div class="row rowheader">
+	 
+ 		  		COST IN MINUTES
+	 </div>
+	 <div class="row ">
 			{{custo}}
-		</div>
 	</div>
+	 <div style="margin-top:10px;" class="row rowheader">
+		THIEVERY RISK
+	</div>
+ 	<div class="row ">
+
+ 		<div id="grad1"></div>
+	 </div>
+	 	<div class="row ">
+			<div style="width: 20%;display: inline;float: left;">SAFE</div> 
+			<div style="width: 35%;display: inline;float: right;">DANGER</div>	 
+      </div>	
+	</div>
+
+
 	{% endif %}
 {% endif %}
-<div>
 </body>
 </html>
