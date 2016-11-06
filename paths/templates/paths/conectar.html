@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <html>
 <head>
 	<title>VOYAGE</title>
@@ -73,3 +74,80 @@
 </div>
 </body>
 </html>
+=======
+<html>
+<head>
+	<title>VOYAGE</title>
+	<!-- Latest compiled and minified CSS -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+	<!-- Optional theme -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+
+	<!-- Latest compiled and minified JavaScript -->
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script></head>
+<body>
+	<div class="container">
+<h1>VOYAGE - Conectar</h1>
+<hr/>
+<nav class="navbar navbar-default">
+  <div class="container-fluid">
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+    	<ul class="nav navbar-nav">
+    		<li><a href={% url 'voyage:index' %}>Routes</a></li>
+    		<li><a href={% url 'voyage:insert' %}>New Node</a></li>
+    		<li><a href={% url 'voyage:conectar' %}>New Relationship</a></li>
+    	</ul>
+  </div>
+  </div>
+</nav>  	
+<br/>
+<div class='container'>
+	<form  method="POST">
+		{% csrf_token %}
+	  	<div class="form-group">
+	 		<div class="row">
+	 			<label>FROM:</label>
+				<select id="origem" name="origem">
+				<option selected disabled> -- choose one-- </option>	
+				{% for item in localidades %}
+				<option value="{{item}}">{{item}}</option>	
+				{% endfor %}
+				</select>
+				<label>TO:</label>
+				<select id="destino" name="destino">
+				<option selected disabled> -- choose one-- </option>	
+				{% for item in localidades %}
+				<option value="{{item}}">{{item}}</option>	
+				{% endfor %}
+				</select>
+			</div>
+			<div class="row">
+				<label>Distance: (Km)</label>
+				<input type="text" class="span2" name="distancia">
+			</div>
+			<div class="row">
+				<label>Avarage Speed: (Km/h)</label>
+				<input type="text" class="span2" name="v_normal">
+				<label>Avarage Speed on Rush Hours: (Km/h)</label>
+				<input type="text" class="span2" name="v_pico">	
+   			</div>
+    		<div class="row">
+				<label>Danger level: (0~100)</label>
+				<input type="text" class="span2" name="danger">	
+			</div>
+			<div class="row">
+	    		<button type="submit" class="btn btn-default">OK</button>
+			</div>
+		</div>
+	</form>
+		{% if insert %}
+		{% autoescape off %}
+		{{ status}}
+		{% endautoescape %}
+		{% endif %}
+	</div>
+</div>
+</body>
+</html>
+>>>>>>> origin/voyage_pygraphviz
