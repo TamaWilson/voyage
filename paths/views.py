@@ -1,9 +1,8 @@
 from django.shortcuts import render
 from neomodel import db
 from paths.models import Localidade, ConectaRel
-import pygraphviz as gv
 from django.conf import settings as djangoSettings
-
+import pydot
 # Create your views here.
 
 def index(request):
@@ -21,7 +20,7 @@ def results(request):
     origem = request.POST['origem']
     destino = request.POST['destino']
      #Verifica no lado do servidor se a origem/destino são iguais ou escolhidos corretamente
-    if(origem == destino):
+    if origem == destino:
         context = { 'erro': True }
     else:
         #verifica se o horário de pico foi ativado 
@@ -32,7 +31,7 @@ def results(request):
 
         query = '''MATCH (start:Localidade {nome: '%s'}), (end:Localidade {nome: '%s'})
                    CALL apoc.algo.dijkstra(start, end, 'CONECTA_COM', '%s') YIELD path, weight
-                   RETURN path, weight''' % (origem, destino,velocidade) #carrega a query com algoritmo de Dijkstra utilizando o plugin APOC do neo4j. 
+                   RETURN path, weight''' % (origem, destino,velocidade) #carrega a query com algoritmo de Dijkstra utilizando o plugin APOC do neo4j.
         
         
         results, meta = db.cypher_query(query) #executa a query retorna um record list contendo apenas 1 resultado (o menor)
@@ -40,12 +39,12 @@ def results(request):
         if(len(results) <1): #caso nenhum resultado tenha retornado as flags de erro são definidas
             context = { "null_result": True, "erro": False }
         else:
-            result = results[0] #Recupera o unico indice do RecordList como um objeto do tipo Record
-            raw_nodes = result['path'] #Atraves do index 'path' retornamos o PathGraph com todos os nós
-            
-            drawGraph(raw_nodes)    
+            raw_nodes = results[0][0] #Recupera o Path da lista recebida no resultado da query
 
-            context = { 'custo': round(result['weight'],2) , "erro": False, "null_result": False } #definimos o contexto com o nome dos nos, o custo total e as flags de controle da view
+            
+            drawGraph(raw_nodes)
+
+            context = { 'custo': round(results[0][1],2) , "erro": False, "null_result": False } #definimos o contexto com o nome dos nos, o custo total e as flags de controle da view
 
     return render(request, 'paths/results.html', context)
 
@@ -55,10 +54,13 @@ def insert(request): #funcao para inserir um no no banco de dados
     context = { 'insert': False, 'status':"Ocorreu um erro" }
 
     if request.POST.get("nome"): #caso algum valor tenha retornado da interface
-        
+
         nome_node = request.POST['nome']   #recupera o texto inserido na pagina
-        query = "CREATE (:Localidade {nome:'%s'})" % (nome_node) #executa a query para criar um novo node
-        db.cypher_query(query)
+
+        node = Localidade(nome=nome_node)
+        node.save()
+        node.refresh()
+
         context = { 'insert': True, 'status':"Localidade cadastrada com sucesso"}
     return render(request, 'paths/insert.html', context)
 
@@ -90,27 +92,32 @@ def conectar(request): #funcao para ligar um nó ao outro
              context = { "localidades" : localidades, 'insert': True, 'status': "<span style='color: red;font-weight: bolder;'>ERRO<span>" }
         else:
             #A query abaixo cria um novo relacionamento entre 2 nós informados pelo usuário
-            query = "MATCH (origem:Localidade {nome:'%s'}), (destino:Localidade {nome:'%s'}) CREATE (origem)-[:CONECTA_COM {distancia: %02f, vnormal: %02f, vrush: %02f, danger: %d}]->(destino)" % (origem,destino,distancia_n,pesoN,pesoR, danger)
-            db.cypher_query(query)
+
+            node_origem = Localidade.nodes.get(nome=origem)
+            node_destino = Localidade.nodes.get(nome=destino)
+
+            relation = node_origem.conectar.connect(node_destino, {'distancia': distancia_n, 'vnormal': pesoN, 'vrush': pesoR, 'danger': danger})
+            relation.save()
 
             context = { "localidades" : localidades, 'insert': True, 'status': "<span style='color: green;font-weight: bolder;'>CONECTADO COM SUCESSO<span>" }
             
 
     return render(request, 'paths/conectar.html', context)
 
-
+#pydot version
 def drawGraph(raw_nodes):
-    
-    nodes = [Localidade.inflate(row).nome for row in raw_nodes.nodes]
+    nodes = []
     relationships = [rel['danger'] for rel in raw_nodes.relationships]
     
-    graph = gv.AGraph(directed=True)
-    graph.add_nodes_from(nodes)
+    graph = pydot.Dot(graph_type='digraph')
+
+    for item in raw_nodes.nodes:
+        node = pydot.Node(Localidade.inflate(item).nome)
+        graph.add_node(node)
+        nodes.append(node)
 
     for i in range(len(nodes)-1):
         hue = 0.32*(100-relationships[i])/100
         hsv = "%f 1.0 1.0" % hue
-        graph.add_edge(nodes[i],nodes[i+1],color=hsv)
-    graph.layout(prog="dot")
-    graph.draw(djangoSettings.STATICFILES_DIRS[0] + "/paths/img/result_graph.png")
-
+        graph.add_edge(pydot.Edge(nodes[i],nodes[i+1],color=hsv))
+    graph.write_png(djangoSettings.STATICFILES_DIRS[0] + "/paths/img/result_graph.png")
