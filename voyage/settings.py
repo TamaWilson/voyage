@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/1.10/ref/settings/
 """
 
 import os
+from neomodel import config
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -124,3 +125,5 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'statics')
 STATICFILES_DIRS = (
                 os.path.join(BASE_DIR,'static'), # if your static files folder is named "staticfiles"
 )
+
+config.DATABASE_URL = 'bolt://neo4j:neo4@localhost:7687'  # default
