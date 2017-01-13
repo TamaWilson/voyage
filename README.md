@@ -1,19 +1,25 @@
-# voyage
+# Voyage
 Estudo para construção de um sistema de sugestão de rotas.
 
 #Requisitos:
 
-- Python 3.5
+- Python 3.X
 - Django 1.10
-- Neomodels
+- Neomodel
 - Py2neo
-- Neo4j 2.2.X 
+- Neo4j 3.0.X 
+- Plugin APOC para o Neo4j
+- Graphviz 2.28
+- PyGraphviz
 
 #Inicialização
 
 - É necessário popular a database com bairros antes de utilizar o sistema, o arquivo DB_case.txt possui uma query do neo4j para tal.
 
+#Mudanças
+- Devido a incompatibilidade do Neomodel com o Neo4j 3.0 os métodos foram modificados para utilizar querys em cypher em vez dos métodos fornecidos pelo Neomodel.
+- Utilização do PygGraphviz para renderizar o resultados.
+
 #TO-DO:
 
-- Ajustar o sistema para calcular as rotas em qualquer direção.
-- Incluir a inicialização no código python.
+- Incluir a inicialização no código python
