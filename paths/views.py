@@ -3,6 +3,9 @@ from neomodel import db
 from paths.models import Localidade, ConectaRel
 from django.conf import settings as djangoSettings
 import pydot
+
+#import pygraphviz as gv - Uncomment this line for pygraphviz support - comment the pydot line after.
+
 # Create your views here.
 
 def index(request):
@@ -20,8 +23,8 @@ def results(request):
     origem = request.POST['origem']
     destino = request.POST['destino']
      #Verifica no lado do servidor se a origem/destino são iguais ou escolhidos corretamente
-    if origem == destino:
-        context = { 'erro': True }
+    if (origem == destino):
+          context = { 'erro': True }
     else:
         #verifica se o horário de pico foi ativado 
         if request.POST.get("rush"):
@@ -122,4 +125,23 @@ def drawGraph(raw_nodes):
         graph.add_edge(pydot.Edge(nodes[i],nodes[i+1],color=hsv))
     graph.write_png(djangoSettings.STATICFILES_DIRS[0] + "/paths/img/result_graph.png")
 
+#if you want pygraviz
+'''
+def drawGraph(raw_nodes):
+
+    nodes = [Localidade.inflate(row).nome for row in raw_nodes.nodes]
+
+    relationships = [rel['danger'] for rel in raw_nodes.relationships]
+
+    graph = gv.AGraph(directed=True)
+-
+    graph.add_nodes_from(nodes)
+
+    for i in range(len(nodes)-1):
+        hue = 0.32 * (100 - relationships[i]) / 100
+        graph.add_edge(nodes[i],nodes[i+1],color=hsv)
+        graph.layout(prog="dot")
+        graph.draw(djangoSettings.STATICFILES_DIRS[0] + "/paths/img/result_graph.png")
+
+'''
 
