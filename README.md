@@ -9,7 +9,7 @@ Estudo para construção de um sistema de sugestão de rotas.
 - Neo4j 3.0.X 
 - Plugin APOC para o Neo4j
 - Graphviz 2.28
-- PyDot
+- PyDot or PyGraphviz
 
 #Inicialização
 
@@ -18,7 +18,3 @@ Estudo para construção de um sistema de sugestão de rotas.
 #Mudanças
 - Troca do PygGraphviz pelo PyDot para renderizar o resultados por conta do ambiente de desenvolvimento em Windows.
 
-#TO-DO:
-
-- Atualizar o banco de testes com os novos atributos
-- Incluir a inicialização no código python
