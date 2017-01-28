@@ -121,3 +121,5 @@ def drawGraph(raw_nodes):
         hsv = "%f 1.0 1.0" % hue
         graph.add_edge(pydot.Edge(nodes[i],nodes[i+1],color=hsv))
     graph.write_png(djangoSettings.STATICFILES_DIRS[0] + "/paths/img/result_graph.png")
+
+
